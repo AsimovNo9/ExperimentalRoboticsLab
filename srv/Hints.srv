@@ -1,5 +1,5 @@
-# Goal 
-string guess
+# Request
+string empty
 ---
 # Result
 string hint

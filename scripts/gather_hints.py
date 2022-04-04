@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-from tkinter import Place
 import rospy
-import time
 import random
 
 from experimental_robotics.srv import Hints, HintsResponse
@@ -14,21 +12,25 @@ def generate_hints():
     who = ["Joseph", "Mark", "Mabel", "Romero", "Almate", "Bruno"]
     what = ["Broom", "Stick", "Knife", "Bucket", "Gun", "Tissue", "Slippers"]
 
-
-def clbk_function(req):
-    if rospy.has_param(f"/locations/{req.goal}"):
-        result = destination(req.goal)
-        return NavResponse(result)
-    else:
-        return NavResponse("This Room doesn't exist")
+    choice = random.choice([0, 1])
+    if choice == 0:
+        guess = random.choice(where) + random.choice(who) + random.choice(what)
+    elif choice == 1:
+        guess = (
+            random.choice(where)
+            + random.choice(who)
+            + random.choice(who)
+            + random.choice(what)
+        )
+    return guess
 
 
 def main():
 
-    rospy.init_node("Navigator", anonymous=True)
+    rospy.init_node("hint_generator", anonymous=False)
     print("The service is about to start")
 
-    rospy.Service("nav_to_service", Nav, clbk_function)
+    rospy.Service("hint_generator", Hints, generate_hints)
     print("The service has started")
 
     rospy.spin()
