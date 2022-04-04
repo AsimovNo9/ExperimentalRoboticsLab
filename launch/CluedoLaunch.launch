@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
 	<group ns="locations">
-		<rosparam file="$(find exprob_navigation)/param/locations.yaml" command="load" />
+		<rosparam file="$(find experimental_robotics)/param/locations.yaml" command="load" />
 	</group>
 	<node name="Navigation" pkg="experimental_robotics" type="navigation.py" output="screen" respawn="false" />
     <node name="Knowledge" pkg="experimental_robotics" type="knowledge.py" output="screen" respawn="false" />

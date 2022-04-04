@@ -1,11 +1,13 @@
-from asyncio.windows_events import NULL
 import rospy
 
 import smach
 
 import smach_ros
 
-from experimental_robotics.srv import nav, navResponse
+from experimental_robotics.srv import Nav, NavResponse
+from experimental_robotics.srv import Hints, NavResponse
+from experimental_robotics.srv import Oracle, NavResponse
+from experimental_robotics.srv import Knowledge, NavResponse
 
 ###++++++++++++++++ Navigate ++++++++++++++++###
 
@@ -28,7 +30,7 @@ class Navigate(smach.State):
             print(f"Service call failed: {exc}")
 
     def execute(self, userdata):
-        response = navigation("Living Room")
+        response = self.navigation("Living Room")
         if response == "Reached Room":
             return "Reached Room"
         else:
@@ -39,6 +41,8 @@ class Navigate(smach.State):
 
 
 class GatherHints(smach.State):
+    guess_hint = ""
+
     def __init__(self):
         smach.State.__init__(
             self,
@@ -47,7 +51,7 @@ class GatherHints(smach.State):
             # input_keys = []
         )
 
-    def guess(req):
+    def guess(self, req):
         rospy.wait_for_service("hint_generator")
         try:
             hint_serv = rospy.ServiceProxy("hint_generator", Hints)
@@ -56,8 +60,8 @@ class GatherHints(smach.State):
             print(f"Service call failed: {exc}")
 
     def execute(self, userdata):
-        response = guess(req)
-        if response != NULL:
+        GatherHints.guess_hint = self.guess("")
+        if GatherHints.guess_hint != "":
             return "Hint Obtained"
         else:
             return "No Hint"
@@ -75,16 +79,16 @@ class Knowledge(smach.State):
             # input_keys = []
         )
 
-    def FindConsistency(req):
+    def findConsistency(self, req):
         rospy.wait_for_service("knowledge_base")
         try:
             Knowledge_serv = rospy.ServiceProxy("knowledge_base", Knowledge)
-            return Knowledge_serv(req)
+            return Knowledge_serv()
         except rospy.ServiceException as exc:
             print(f"Service call failed: {exc}")
 
     def execute(self, userdata):
-        response = FindConsistency(req)
+        response = self.findConsistency(GatherHints.guess_hint)
         if response == "1":
             print("It is complete and consistent")
             return "Consistent"
@@ -108,7 +112,7 @@ class Oracle(smach.State):
             # input_keys = []
         )
 
-    def oracle_check(req):
+    def oracle_check(self, req):
         rospy.wait_for_service("oracle")
         try:
             oracle_serv = rospy.ServiceProxy("oracle", Oracle)
@@ -117,7 +121,7 @@ class Oracle(smach.State):
             print(f"Service call failed: {exc}")
 
     def execute(self, userdata):
-        response = oracle_check(req)
+        response = self.oracle_check(GatherHints.guess_hint)
         if response == "Game Won":
             return "Game Won"
         elif response == "Game Lost":
