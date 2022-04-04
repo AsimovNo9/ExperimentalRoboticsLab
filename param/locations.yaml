@@ -1,0 +1,35 @@
+living_room: {
+  name: "Living Room",
+  x : 1,
+  y : 3
+}
+
+kitchen: {
+  name: "Kitchen",
+  x : 1,
+  y : 6
+}
+
+bedroom: {
+  name: "Bedroom",
+  x : 2,
+  y : 3
+}
+
+bathroom: {
+  name: "Bathroom",
+  x : 2,
+  y : 6
+}
+
+library: {
+  name: "Library",
+  x : 3,
+  y : 3
+}
+
+garage: {
+  name: "Garage",
+  x : 3,
+  y : 3
+}
