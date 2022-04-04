@@ -7,7 +7,7 @@ import random
 from experimental_robotics.srv import Hints, HintsResponse
 
 
-def generate_hints():
+def generate_hints(req):
     where = ["Kitchen", "Bedroom", "Bathroom", "Library", "Garage", "Living Room"]
     who = ["Joseph", "Mark", "Mabel", "Romero", "Almate", "Bruno"]
     what = ["Broom", "Stick", "Knife", "Bucket", "Gun", "Tissue", "Slippers"]

@@ -1,0 +1,5 @@
+# Request
+string guess
+---
+# Result
+string win_status

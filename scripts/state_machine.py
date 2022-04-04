@@ -46,3 +46,13 @@ if __name__ == "__main__":
                 "Game Lost": "Navigate",
             },
         )
+
+        sis = smach_ros.IntrospectionServer(
+            "server_name", Cluedo, "Cluedo Robotics State Machine"
+        )
+        sis.start()
+
+        outcome = Cluedo.execute()
+
+        rospy.spin()
+        sis.stop()
