@@ -20,7 +20,7 @@ class Navigate(smach.State):
             # input_keys = []
         )
 
-    def navigation(req):
+    def navigation(self, req):
         rospy.wait_for_service("nav_to_service")
         try:
             Nav_serv = rospy.ServiceProxy("nav_to_service", Nav)
