@@ -28,11 +28,11 @@ def guess_checker(guess):
     consistency_code = "".join(count)
 
     if consistency_code == "111":
-        return "1"
+        return KnowledgeResponse("1")
     elif "0" in list(consistency_code):
-        return "2"
+        return KnowledgeResponse("2")
     else:
-        return "3"
+        return KnowledgeResponse("3")
 
 
 def main():

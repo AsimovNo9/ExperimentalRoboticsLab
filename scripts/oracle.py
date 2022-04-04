@@ -10,9 +10,9 @@ from experimental_robotics.srv import Oracle, OracleResponse
 
 def win_status(guess):
     if guess == ["Joseph", "Bathroom", "Knife"]:
-        return "Game Won"
+        return OracleResponse("Game Won")
     else:
-        return "Game Lost"
+        return OracleResponse("Game Lost")
 
 
 def main():

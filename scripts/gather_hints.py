@@ -22,7 +22,7 @@ def generate_hints(req):
             + random.choice(who)
             + random.choice(what)
         )
-    return guess
+    return HintsResponse(guess)
 
 
 def main():

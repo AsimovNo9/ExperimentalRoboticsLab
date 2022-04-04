@@ -5,7 +5,7 @@ import smach
 
 import smach_ros
 
-from experimental_robotics.srv import nav, nevResponse
+from experimental_robotics.srv import nav, navResponse
 
 ###++++++++++++++++ Navigate ++++++++++++++++###
 
@@ -20,7 +20,7 @@ class Navigate(smach.State):
         )
 
     def navigation(req):
-        rospy.wait_for_service("nav_to-service")
+        rospy.wait_for_service("nav_to_service")
         try:
             Nav_serv = rospy.ServiceProxy("nav_to_service", Nav)
             return Nav_serv(req)
@@ -28,7 +28,7 @@ class Navigate(smach.State):
             print(f"Service call failed: {exc}")
 
     def execute(self, userdata):
-        response = navigation("Living room")
+        response = navigation("Living Room")
         if response == "Reached Room":
             return "Reached Room"
         else:
