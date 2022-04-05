@@ -172,7 +172,7 @@ if __name__ == "__main__":
             KnowledgeBase(),
             transitions={
                 "Consistent": "Oracle Check",
-                "Inconsistent": "Knowledge Base",
+                "Inconsistent": "Navigate",
             },
         )
 
