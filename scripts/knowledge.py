@@ -9,6 +9,7 @@ from experimental_robotics.srv import Knowledge, KnowledgeResponse
 
 def guess_checker(guess):
 
+    guess = guess.guess.split(" ")
     where = ["Kitchen", "Bedroom", "Bathroom", "Library", "Garage", "Living Room"]
     who = ["Joseph", "Mark", "Mabel", "Romero", "Almate", "Bruno"]
     what = ["Broom", "Stick", "Knife", "Bucket", "Gun", "Tissue", "Slippers"]

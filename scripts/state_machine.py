@@ -1,12 +1,15 @@
+#! /usr/bin/env python
+
 import rospy
 
 import smach
 import smach_ros
+import random
 
-from experimental_robotics.srv import Nav, NavResponse
-from experimental_robotics.srv import Hints, NavResponse
-from experimental_robotics.srv import Oracle, NavResponse
-from experimental_robotics.srv import Knowledge, NavResponse
+from experimental_robotics.srv import Nav, NavRequest
+from experimental_robotics.srv import Hints, HintsRequest
+from experimental_robotics.srv import Oracle, OracleRequest
+from experimental_robotics.srv import Knowledge, KnowledgeRequest
 
 ###++++++++++++++++ Navigate ++++++++++++++++###
 
@@ -29,8 +32,12 @@ class Navigate(smach.State):
             print(f"Service call failed: {exc}")
 
     def execute(self, userdata):
-        response = self.navigation("living_room")
-        if response == "Reached Room":
+        req = NavRequest()
+        req.goal = random.choice(
+            ["kitchen", "bedroom", "bathroom", "library", "garage", "living_room"]
+        )
+        response = self.navigation(req)
+        if response.result == "Reached Room":
             return "Reached Room"
         else:
             return "Room Unreached"
@@ -59,9 +66,11 @@ class GatherHints(smach.State):
             print(f"Service call failed: {exc}")
 
     def execute(self, userdata):
-        GatherHints.guess_hint = self.guess("")
-        userdata.guess_out = GatherHints.guess_hint
-        if GatherHints.guess_hint != "":
+        req = HintsRequest()
+        req.empty = ""
+        GatherHints.guess_hint = self.guess(req)
+        userdata.guess_out = GatherHints.guess_hint.hint
+        if GatherHints.guess_hint.hint != "":
             return "Hint Obtained"
         else:
             return "No Hint"
@@ -70,7 +79,7 @@ class GatherHints(smach.State):
 ###++++++++++++++++ Check Knowledge ++++++++++++++++###
 
 
-class Knowledge(smach.State):
+class KnowledgeBase(smach.State):
     def __init__(self):
         smach.State.__init__(
             self,
@@ -88,22 +97,24 @@ class Knowledge(smach.State):
             print(f"Service call failed: {exc}")
 
     def execute(self, userdata):
-        response = self.findConsistency(userdata.guess_hint)
-        if response == "1":
+        req = KnowledgeRequest()
+        req.guess = "Kitchen Mark Broom"
+        response = self.findConsistency(req)
+        if response.result == "1":
             print("It is complete and consistent")
             return "Consistent"
-        elif response == "2":
-            print("It is incomplete and inconsistent")
-            return "Inconsistent"
-        elif response == "3":
-            print("It is complete and inconsistent")
+        elif response.result == "2" or response.result == "3":
+            if response.result == "2":
+                print("It is incomplete and inconsistent")
+            elif response == "3":
+                print("It is complete and inconsistent")
             return "Inconsistent"
 
 
 ###++++++++++++++++ Check Win with Oracle ++++++++++++++++###
 
 
-class Oracle(smach.State):
+class OracleCheck(smach.State):
     def __init__(self):
         smach.State.__init__(
             self,
@@ -121,10 +132,12 @@ class Oracle(smach.State):
             print(f"Service call failed: {exc}")
 
     def execute(self, userdata):
-        response = self.oracle_check(userdata.guess_hint)
-        if response == "Game Won":
+        req = OracleRequest()
+        req.guess = userdata.guess_hint
+        response = self.oracle_check(req)
+        if response.win_status == "Game Won":
             return "Game Won"
-        elif response == "Game Lost":
+        elif response.win_status == "Game Lost":
             return "Game Lost"
 
 
@@ -156,7 +169,7 @@ if __name__ == "__main__":
 
         smach.StateMachine.add(
             "Knowledge Base",
-            Knowledge(),
+            KnowledgeBase(),
             transitions={
                 "Consistent": "Oracle Check",
                 "Inconsistent": "Knowledge Base",
@@ -165,7 +178,7 @@ if __name__ == "__main__":
 
         smach.StateMachine.add(
             "Oracle Check",
-            Oracle(),
+            OracleCheck(),
             transitions={
                 "Game Won": "Game Won!!!",
                 "Game Lost": "Navigate",
