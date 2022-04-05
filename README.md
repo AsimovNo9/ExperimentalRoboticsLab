@@ -27,11 +27,11 @@
 
  # Software Architecture Description
 
-<img src="/images/State-image.jpg" alt="State Machine" width="" height="">
+<img src="/images/State-Image.jpg" alt="State Machine" width="" height="">
 
 Given the following state machine, we will design an architecture which centers the state machine as the core of the of the entire package. Where the state machine inquires as a client to the navigation service node, the oracle service node, the knowledge service node and the gather hints service node. These in turn return the state machine with its required responses so that the process is continued.
 
-<img src="/images/ComponentDiagram.jfif" alt="State Machine" width="" height="">
+<img src="/images/ComponentDiagram.jfif" alt="Component Diagram" width="" height="">
 
 # Intended Implementations
 
