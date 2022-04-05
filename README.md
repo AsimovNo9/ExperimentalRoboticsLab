@@ -19,7 +19,7 @@
 
   
  # Installation
- 1. Clone the Git into your ROS workspace
+ 1. Clone the git repo into your ROS workspace
  2. Rename the folder into "experimental_robotics" as that is how the package is structured to remove the descripancies of the repo
  3. catkin_make or build your workspace
  4. Source the Setup.bash if not already done
