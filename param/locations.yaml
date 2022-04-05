@@ -31,5 +31,5 @@ library: {
 garage: {
   name: "Garage",
   x : 3,
-  y : 3
+  y : 6
 }

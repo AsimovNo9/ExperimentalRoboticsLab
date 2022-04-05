@@ -29,7 +29,7 @@ class Navigate(smach.State):
             print(f"Service call failed: {exc}")
 
     def execute(self, userdata):
-        response = self.navigation("Living Room")
+        response = self.navigation("living_room")
         if response == "Reached Room":
             return "Reached Room"
         else:
@@ -46,7 +46,7 @@ class GatherHints(smach.State):
         smach.State.__init__(
             self,
             outcomes=["Hint Obtained", "No Hint"],
-            # outpuy_keys = [],
+            output_keys=["guess_out"],
             # input_keys = []
         )
 
@@ -60,6 +60,7 @@ class GatherHints(smach.State):
 
     def execute(self, userdata):
         GatherHints.guess_hint = self.guess("")
+        userdata.guess_out = GatherHints.guess_hint
         if GatherHints.guess_hint != "":
             return "Hint Obtained"
         else:
@@ -74,20 +75,20 @@ class Knowledge(smach.State):
         smach.State.__init__(
             self,
             outcomes=["Consistent", "Inconsistent"],
-            # outpuy_keys = [],
-            # input_keys = []
+            # output_keys = [],
+            input_keys=["guess_hint"],
         )
 
     def findConsistency(self, req):
         rospy.wait_for_service("knowledge_base")
         try:
             Knowledge_serv = rospy.ServiceProxy("knowledge_base", Knowledge)
-            return Knowledge_serv()
+            return Knowledge_serv(req)
         except rospy.ServiceException as exc:
             print(f"Service call failed: {exc}")
 
     def execute(self, userdata):
-        response = self.findConsistency(GatherHints.guess_hint)
+        response = self.findConsistency(userdata.guess_hint)
         if response == "1":
             print("It is complete and consistent")
             return "Consistent"
@@ -107,8 +108,8 @@ class Oracle(smach.State):
         smach.State.__init__(
             self,
             outcomes=["Game Won", "Game Lost"],
-            # outpuy_keys = [],
-            # input_keys = []
+            # output_keys = [],
+            input_keys=["guess_hint"],
         )
 
     def oracle_check(self, req):
@@ -120,7 +121,7 @@ class Oracle(smach.State):
             print(f"Service call failed: {exc}")
 
     def execute(self, userdata):
-        response = self.oracle_check(GatherHints.guess_hint)
+        response = self.oracle_check(userdata.guess_hint)
         if response == "Game Won":
             return "Game Won"
         elif response == "Game Lost":
@@ -150,6 +151,7 @@ if __name__ == "__main__":
                 "Hint Obtained": "Knowledge Base",
                 "No Hint": "Gather Hints",
             },
+            remapping={"guess_out": "guess_hint"},
         )
 
         smach.StateMachine.add(

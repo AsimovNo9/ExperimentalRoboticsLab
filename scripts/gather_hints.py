@@ -14,12 +14,17 @@ def generate_hints(req):
 
     choice = random.choice([0, 1])
     if choice == 0:
-        guess = random.choice(where) + random.choice(who) + random.choice(what)
+        guess = (
+            random.choice(where) + " " + random.choice(who) + " " + random.choice(what)
+        )
     elif choice == 1:
         guess = (
             random.choice(where)
+            + " "
             + random.choice(who)
+            + " "
             + random.choice(who)
+            + " "
             + random.choice(what)
         )
     return HintsResponse(guess)
