@@ -39,16 +39,13 @@ The project is intended to be bolstered given these set of features:
 
 
 
-<<<<<<< HEAD
 |Priority|            Feature               |                               Description                                      |      Status      |
 |:------:|:--------------------------------:|:------------------------------------------------------------------------------:|:----------------:|
 |    1   |              Armor               |           Implementing Armor client service for ontology inclusion             |   :white_check_mark:  |
 |    2   |             ROS Plan             |                  Implementing ROS Plan to describe                             |  :construction:  |
 |    3   |        A Navigation Stack        | Replacing the random naviagtion implementation with a proper navigation stack  |    :bookmark:    |
 |    4   |  Robot Modeling and Simulation   |       URDF and CAD modelling of robot, with move_it implementation             |    :bookmark:    |
-=======
   
 
 
  
->>>>>>> 075a86e546a1e34f01bbd564a0fbff6f57b7a482
