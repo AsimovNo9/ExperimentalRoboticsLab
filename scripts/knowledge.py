@@ -33,7 +33,6 @@ class KnowledgeManager:
         rospy.Service("knowledge_base", Knowledge, self.clbkfnc)
 
     def clbkfnc(self, guess):
-        hypo = []
         _response = KnowledgeResponse()
         self.add_guess(guess)
         _completed = self.query("COMPLETED")
@@ -46,6 +45,77 @@ class KnowledgeManager:
                     return _response.result("3")
         else:
             return _response.result("2")
+
+    def load_ref_from_file(
+        self,
+        owl_file_path,
+        iri,
+        buffered_manipulation=True,
+        reasoner="PELLET",
+        buffered_reasoner=True,
+        mounted=False,
+    ):
+        """
+        Loads an ontology into armor from an .owl file.
+        Args:
+            owl_file_path (str):
+            iri (str):
+            buffered_manipulation (bool): set buffered manipulations, default False
+            reasoner (str): set which reasoner to use (PELLET, HERMIT, SNOROCKET, FACT), default PELLET
+            buffered_reasoner (bool): set if reasoner should be buffered, default False
+            mounted (bool): set if the client should be mounted on the reference, default False
+        Raises:
+            armor_api.exceptions.ArmorServiceCallError: if call to ARMOR fails
+            armor_api.exceptions.ArmorServiceInternalError: if ARMOR reports an internal error
+        """
+        try:
+            if mounted:
+                res = self.call(
+                    "LOAD",
+                    "FILE",
+                    "MOUNTED",
+                    [
+                        owl_file_path,
+                        iri,
+                        str(buffered_manipulation),
+                        reasoner,
+                        str(buffered_reasoner),
+                    ],
+                )
+            else:
+                res = self.call(
+                    "LOAD",
+                    "FILE",
+                    "",
+                    [
+                        owl_file_path,
+                        iri,
+                        str(buffered_manipulation),
+                        reasoner,
+                        str(buffered_reasoner),
+                    ],
+                )
+
+        except rospy.ServiceException:
+            raise ArmorServiceCallError(
+                "Service call failed upon reference {0} from {1}".format(
+                    self._client.reference_name, self._client.client_id
+                )
+            )
+
+        except rospy.ROSException:
+            raise ArmorServiceCallError(
+                "Cannot reach ARMOR client: Timeout Expired. Check if ARMOR is running."
+            )
+
+        if not res.success:
+            raise ArmorServiceInternalError(res.error_description, res.exit_code)
+
+    def call(self, command, first_spec, second_spec, args_list):
+        req = self.request(command, first_spec, second_spec, args_list)
+        rospy.wait_for_service(self._service_name, self.timeout)
+        res = self._handle(req).armor_response
+        return res
 
     def add_guess(self, guess):
         self.guess = guess.guess.split(" ")
@@ -63,7 +133,7 @@ class KnowledgeManager:
             if i in what:
                 self.attribute.append("what")
 
-        for i in self.guess:
+        for i, a in enumerate(self.guess):
             if self.attribute[i] == "where":
                 self.ind_cls("PLACE", i)
                 self.disjoint_reason("PLACE")
