@@ -37,13 +37,11 @@ Given the following state machine, we will design an architecture which centers 
 
 The project is intended to be bolstered given these set of features:
 
-1. Inclusion of Armor for Ontology
-2. ROS Plan
-3. A Robust Navigation Stack
-4. Robot Modeling and Simulation
 
 
-  
-
-
- 
+|Priority|            Feature               |                               Description                                      |      Status      |
+|:------:|:--------------------------------:|:------------------------------------------------------------------------------:|:----------------:|
+|    1   |              Armor               |           Implementing Armor client service for ontology inclusion             |   :white_check_mark:  |
+|    2   |             ROS Plan             |                  Implementing ROS Plan to describe                             |  :construction:  |
+|    3   |        A Navigation Stack        | Replacing the random naviagtion implementation with a proper navigation stack  |    :bookmark:    |
+|    4   |  Robot Modeling and Simulation   |       URDF and CAD modelling of robot, with move_it implementation             |    :bookmark:    |
