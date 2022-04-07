@@ -37,14 +37,16 @@ class KnowledgeManager:
         self.add_guess(guess)
         _completed = self.query("COMPLETED")
         _inconsistent = self.query("INCONSISTENT")
-        if len(_completed) > 0:
-            for hypothesis in _completed:
-                if hypothesis not in _inconsistent:
-                    return _response.result("1")
-                else:
-                    return _response.result("3")
+        if _completed != 0:
+            if _inconsistent == 0:
+                _response.result = "1"
+                return _response
+            else:
+                _response.result = "3"
+                return _response
         else:
-            return _response.result("2")
+            _response.result = "2"
+            return _response
 
     def load_ref_from_file(
         self,
@@ -134,23 +136,25 @@ class KnowledgeManager:
                 self.attribute.append("what")
 
         for i, a in enumerate(self.guess):
+            k = 0
             if self.attribute[i] == "where":
-                self.ind_cls("PLACE", i)
+                self.ind_cls("PLACE", k)
                 self.disjoint_reason("PLACE")
-                self.obj_prop("PLACE", i)
+                self.obj_prop("PLACE", k, i)
                 self.disjoint_reason("PLACE")
 
             if self.attribute[i] == "who":
-                self.ind_cls("PERSON", i)
+                self.ind_cls("PERSON", k)
                 self.disjoint_reason("PERSON")
-                self.obj_prop("PERSON", i)
+                self.obj_prop("PERSON", k, i)
                 self.disjoint_reason("PERSON")
 
             if self.attribute[i] == "what":
-                self.ind_cls("WEAPON", i)
+                self.ind_cls("WEAPON", k)
                 self.disjoint_reason("WEAPON")
-                self.obj_prop("WEAPON", i)
+                self.obj_prop("WEAPON", k, i)
                 self.disjoint_reason("WEAPON")
+        k += 1
 
     def request(self, command, pri_spec, sec_spec, args):
         req = _ArmorDirectiveReq.ArmorDirectiveReq()
@@ -178,64 +182,22 @@ class KnowledgeManager:
         response = self._handle(request).armor_response
         return response
 
-    def obj_prop(self, cls, i):
+    def obj_prop(self, cls, k, i):
         request = self.request(
-            "ADD", "OBJECTPROP", "IND", [self.attribute[i], f"HP{i}", self.guess[i]]
+            "ADD", "OBJECTPROP", "IND", [self.attribute[i], f"HP{k}", self.guess[i]]
         )
         rospy.wait_for_service(self._service_name, self.timeout)
         response = self._handle(request).armor_response
         return response
 
     def query(self, what_to_check):
-        req = self.request("QUERY   ", "", "", [what_to_check])
+        req = self.request("QUERY", "IND", "CLASS", [what_to_check])
         rospy.wait_for_service(self._service_name, self.timeout)
         resp = self._handle(req).armor_response
         return resp
 
 
-# def guess_checker(guess):
-
-#     guess = guess.guess.split(" ")
-#     attribute = []
-#     where = ["Kitchen", "Bedroom", "Bathroom", "Library", "Garage", "Living Room"]
-#     who = ["Joseph", "Mark", "Mabel", "Romero", "Almate", "Bruno"]
-#     what = ["Broom", "Stick", "Knife", "Bucket", "Gun", "Tissue", "Slippers"]
-
-#     consistency_code = None
-#     count = [0, 0, 0]
-#     for i in guess:
-#         if i in where:
-#             count[0] += 1
-#             attribute.append("where")
-#         if i in who:
-#             count[1] += 1
-#             attribute.append("where")
-#         if i in what:
-#             count[2] += 1
-#             attribute.append("where")
-
-#     for index, value in enumerate(count):
-#         count[index] = str(value)
-#     consistency_code = "".join(count)
-
-#     if consistency_code == "111":
-#         return KnowledgeResponse("1")
-#     elif "0" in list(consistency_code):
-#         return KnowledgeResponse("2")
-#     else:
-#         return KnowledgeResponse("3")
-
-
 def main():
-
-    #     rospy.init_node("knowledge_base", anonymous=False)
-    #     print("The service is about to start")
-
-    #     rospy.Service("knowledge_base", Knowledge, guess_checker)
-    #     print("The service has started")
-
-    #     rospy.spin()
-
     rospy.init_node("knowledge_base", anonymous=False)
     print("The service is about to start")
     KnowledgeManager(rospy.get_name(), "cluedo_game")

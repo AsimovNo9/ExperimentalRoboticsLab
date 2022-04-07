@@ -20,10 +20,23 @@
   
  # Installation
  1. Clone the git repo into your ROS workspace
+```bash
+git clone https://github.com/AsimovNo9/ExperimentalRoboticsLab.git
+```
  2. Rename the folder into "experimental_robotics" as that is how the package is structured to remove the descripancies of the repo
- 3. catkin_make or build your workspace
+
+ 3. Build the workspace
+ ```bash
+catkin_make
+```
  4. Source the Setup.bash if not already done
- 5. roslaunch experimental_robotics CluedoLaunch.launch
+ ```bash
+source devel/setup.bash
+```
+ 5. Launch the package
+```bash
+roslaunch experimental_robotics CluedoLaunch.launch
+```
 
  # Software Architecture Description
 
